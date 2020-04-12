@@ -1,0 +1,121 @@
+﻿
+.sudoku-board
+{
+    display: flex;
+    flex-direction: column;
+}
+
+.sudoku-row
+{
+    flex: 1;
+    display: flex;
+}
+
+.sudoku-cell
+{
+    background-color: aliceblue;
+    flex: 1;
+    border: 1px solid black;
+    text-align: center;
+    font-size: 1.5rem;
+    padding: 5px;
+}
+
+.sudoku-cell:focus
+{
+    background-color: black;
+    color: white;
+}
+
+.sudoku-cell-readonly
+{
+    background-color: cornflowerblue;
+    color: white;
+}
+
+.sudoku-cell-conflict, .sudoku-cell-conflict:focus
+{
+    color: red;
+}
+
+.sudoku-cell-border-0-0
+{
+    border-top:2px solid black;
+    border-left: 2px solid black;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+}
+
+.sudoku-cell-border-0-1
+{
+    border-top:2px solid black;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+}
+
+.sudoku-cell-border-0-2
+{
+    border-top:2px solid black;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 2px solid black;
+}
+
+.sudoku-cell-border-1-0
+{
+    border-top:1px solid black;
+    border-left: 2px solid black;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+}
+
+.sudoku-cell-border-1-1
+{
+    border-top:1px solid black;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+}
+
+.sudoku-cell-border-1-2
+{
+    border-top:1px solid black;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 2px solid black;
+}
+
+.sudoku-cell-border-2-0
+{
+    border-top:1px solid black;
+    border-left: 2px solid black;
+    border-bottom: 2px solid black;
+    border-right: 1px solid black;
+}
+
+.sudoku-cell-border-2-1
+{
+    border-top:1px solid black;
+    border-left: 1px solid black;
+    border-bottom: 2px solid black;
+    border-right: 1px solid black;
+}
+
+.sudoku-cell-border-2-2
+{
+    border-top:1px solid black;
+    border-left: 1px solid black;
+    border-bottom: 2px solid black;
+    border-right: 2px solid black;
+}
+
+.sudoku-column-gap
+{
+    flex-basis: 4px;
+}
+
+.sudoku-row-gap
+{
+    flex-basis: 4px;
+}

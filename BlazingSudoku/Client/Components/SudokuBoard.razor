@@ -1,0 +1,82 @@
+﻿@using Sudoku;
+@using BlazingSudoku.Client.Components;
+
+<div class="sudoku-board">
+    <span>
+        <input type="text" @bind="puzzleNumber" placeholder="1-100"/>
+        <select @bind="puzzleDifficulty">
+            <option value="Simple">Simple</option>
+            <option value="Easy">Easy</option>
+            <option value="Intermediate">Intermediate</option>
+            <option value="Expert">Expert</option>
+        </select>
+        <button @onclick="OnClickLoadPuzzle">Load</button>
+        <button @onclick="OnClickSolvePuzzle">Solve</button>
+    </span>
+    <CascadingValue Value="this">
+        @for (int row = 0; row < Puzzle.rows; row++)
+            {
+            if ((row % Puzzle.rowsInBlock) == 0)
+                {
+                <div class="sudoku-row-gap"/>
+                }
+            <div class="sudoku-row">
+                @for (int column = 0; column < Puzzle.columns; column++)
+                    {
+                    if ((column % Puzzle.columnsInBlock) == 0)
+                        {
+                        <div class="sudoku-column-gap"/>
+                        }
+                    <SudokuCell Cell="@(Puzzle.Cells[row, column])" />
+                    }
+            </div>
+            }
+    </CascadingValue>
+</div>
+
+@code {
+    [Parameter] public Puzzle Puzzle { get; set; }
+    private int puzzleNumber = 1;
+    private string puzzleDifficulty = "Intermediate";
+
+    private void OnClickLoadPuzzle()
+        {
+        Puzzle = Puzzle.LoadPuzzle(puzzleNumber - 1, puzzleDifficulty);
+        StateHasChanged();
+        }
+
+    private void OnClickSolvePuzzle()
+        {
+        Puzzle.Solve(1);
+        if (Puzzle.Solutions.Count > 0)
+            {
+            Puzzle solution = Puzzle.Solutions[0];
+            for (int row=0; row < Puzzle.rows; row++)
+                {
+                for (int column = 0; column < Puzzle.columns; column++)
+                    {
+                    Puzzle.SetValue(row, column, solution.GetValue(row, column));
+                    }
+                }
+            StateHasChanged();
+            }
+        }
+
+    public void NavigateUp(SudokuCell sudokuCell)
+        {
+        Puzzle.Cell fromCell = sudokuCell.Cell;
+        int row = fromCell.Row;
+        int column = fromCell.Column;
+
+        do
+            {
+            row--;
+            // wrap to bottom
+            if (row < 0)
+                {
+                row = Puzzle.rows - 1;
+                }
+
+            } while (Puzzle.Cells[row, column].ReadOnly);
+        }
+}

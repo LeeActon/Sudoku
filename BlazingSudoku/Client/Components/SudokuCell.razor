@@ -1,0 +1,144 @@
+﻿@using Sudoku;
+@inject IJSRuntime JSRuntime;
+
+<div @ref="div" class="@CellClass" tabindex="@(TabIndex)" @onkeypress="OnKeyPress" @onkeydown="OnKeyDown">
+    @DisplayString
+</div>
+
+@code {
+    private Puzzle.Cell cell;
+    [Parameter] public Puzzle.Cell Cell
+        {
+        get { return this.cell; }
+        set
+            {
+            this.cell = value;
+            if (this.cell != null)
+                {
+                this.cell.View = this;
+                }
+            }
+        }
+    [Parameter] public string ColorClass { get; set; }
+    [CascadingParameter] public SudokuBoard SudokuBoard { get; set; }
+
+    private ElementReference div;
+
+    private string CellClass
+        {
+        get
+            {
+            return String.Format("sudoku-cell-border-{0}-{1} {2} {3} sudoku-cell ",
+                Cell.Row % Puzzle.rowsInBlock,
+                Cell.Column % Puzzle.columnsInBlock,
+                (Cell.ConflictingCells?.Count > 0) ? "sudoku-cell-conflict" : "",
+                Cell.ReadOnly ? "sudoku-cell-readonly" : ""
+                );
+            }
+        }
+
+    private MarkupString DisplayString
+        {
+        get
+            {
+            if (Cell.Value == 0)
+                return (MarkupString) "&nbsp;";
+
+            return (MarkupString) String.Format("{0}", Cell.Value);
+            }
+        }
+
+    private int TabIndex
+        {
+        get
+            {
+            if (Cell.ReadOnly)
+                return -1;
+
+            return 100 + Cell.Row * Puzzle.columns + Cell.Column;
+            }
+        }
+
+    private void OnKeyDown(KeyboardEventArgs args)
+        {
+        switch (args.Key)
+            {
+            case "ArrowUp":
+                SudokuBoard.NavigateUp(this);
+                break;
+            }
+        }
+
+    private void OnKeyPress(KeyboardEventArgs args)
+        {
+        byte newValue = 0;
+
+        switch (args.Key)
+            {
+            case "1":
+                newValue = 1;
+                break;
+            case "2":
+                newValue = 2;
+                break;
+            case "3":
+                newValue = 3;
+                break;
+            case "4":
+                newValue = 4;
+                break;
+            case "5":
+                newValue = 5;
+                break;
+            case "6":
+                newValue = 6;
+                break;
+            case "7":
+                newValue = 7;
+                break;
+            case "8":
+                newValue = 8;
+                break;
+            case "9":
+                newValue = 9;
+                break;
+            }
+
+        if (Cell.Value != newValue)
+            {
+            List<SudokuCell> sudokuCellsToUpdate = new List<SudokuCell>();
+
+            if (Cell.ConflictingCells != null)
+                {
+                foreach (Puzzle.Cell conflictingCell in Cell.ConflictingCells)
+                    {
+                    SudokuCell sudokuCell = conflictingCell.View as SudokuCell;
+                    if (sudokuCell != null)
+                        {
+                        sudokuCellsToUpdate.Add(sudokuCell);
+                        }
+                    }
+                }
+
+            Cell.Value = newValue;
+
+            if (Cell.ConflictingCells != null)
+                {
+                foreach (Puzzle.Cell conflictingCell in Cell.ConflictingCells)
+                    {
+                    SudokuCell sudokuCell = conflictingCell.View as SudokuCell;
+                    if (sudokuCell != null)
+                        {
+                        sudokuCellsToUpdate.Add(sudokuCell);
+                        }
+                    }
+                }
+            foreach (SudokuCell sudokuCell in sudokuCellsToUpdate)
+                {
+                sudokuCell.StateHasChanged();
+                }
+
+            this.StateHasChanged();
+            }
+        }
+    }

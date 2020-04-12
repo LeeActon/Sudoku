@@ -22,7 +22,7 @@ namespace PuzzleTester
             {
             Sudoku.Puzzle puzzle = new Sudoku.Puzzle(puzzle1);
 
-            puzzle.Solve();
+            puzzle.Solve(10);
 
             if (puzzle.Solutions.Count > 0)
                 {
