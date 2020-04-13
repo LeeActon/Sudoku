@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Sudoku
     {
@@ -44,7 +46,7 @@ namespace Sudoku
 
         public static Puzzle LoadPuzzle(int iPuzzle, string difficulty)
             {
-            string [] puzzles = IntermediatePuzzles;
+            string[] puzzles = IntermediatePuzzles;
 
             switch (difficulty)
                 {
@@ -61,6 +63,7 @@ namespace Sudoku
                     puzzles = ExpertPuzzles;
                     break;
                 }
+
             if (iPuzzle < 0 || iPuzzle >= puzzles.Length)
                 return null;
 
@@ -108,6 +111,8 @@ namespace Sudoku
             this.data = new byte[rows, columns];
             this.solutions = null;
             }
+
+        public Puzzle(Puzzle puzzle) : this(puzzle.data, puzzle.EmptyCells) { }
 
         public Puzzle(byte[,] newData, int emptyCells)
             {
@@ -214,33 +219,59 @@ namespace Sudoku
             return IsValueInRow(row, value) || IsValueInColumn(column, value) || IsValueInBlock(row, column, value);
             }
 
-        public void Solve(int maxSolutions)
+        public class SolutionProgressReport
+            {
+            public int Row { get; set; }
+            public int Column { get; set; }
+            public byte Value { get; set; }
+
+            public int PercentComplete { get; set; }
+            };
+
+        public int Solve(int maxSolutions)
+            {
+            Task<int> task = Solve(maxSolutions, null);
+
+            task.Wait();
+
+            return task.Result;
+            }
+
+        public async Task<int> Solve(int maxSolutions, IProgress<SolutionProgressReport> progress)
             {
             if (Solutions.Count >= maxSolutions)
-                return;
+                return Solutions.Count;
+
+            SolutionProgressReport progessReport = new SolutionProgressReport();
 
             for (int row = 0; row < rows; row++)
                 {
+                progessReport.Row = row;
                 for (int column = 0; column < columns; column++)
                     {
+                    progessReport.Column = column;
                     if (this.data[row, column] == 0)
                         {
                         for (byte value = 1; value <= 9; value++)
                             {
                             if (!IsValueInUse(row, column, value))
                                 {
+                                progessReport.Value = value;
                                 SetValue(row, column, value);
-                                Solve(maxSolutions);
+                                progress?.Report(progessReport);
+                                await Solve(maxSolutions, progress);
                                 SetValue(row, column, 0);
                                 }
                             }
 
-                        return;
+                        return Solutions.Count;
                         }
                     }
                 }
 
             Solutions.Add(new Puzzle(this.data, this.EmptyCells));
+
+            return Solutions.Count;
             }
 
         #region Cell class and support function - Keeps track of conflicting values (useful in UI)

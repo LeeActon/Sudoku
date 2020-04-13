@@ -20,6 +20,17 @@
         <a class="dismiss">🗙</a>
     </div>
     <script src="_framework/blazor.webassembly.js"></script>
+    <script>
+        // Function that can be called from C# to set focus to an element.
+        window.setFocus = (id) =>
+            {
+            var item = document.getElementById(id);
+            if (item != null)
+                {
+                item.focus();
+                }
+            };
+    </script>
 </body>
 
 </html>

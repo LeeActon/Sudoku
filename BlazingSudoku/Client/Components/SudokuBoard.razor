@@ -34,21 +34,35 @@
     </CascadingValue>
 </div>
 
-@code {
+@code
+    {
     [Parameter] public Puzzle Puzzle { get; set; }
     private int puzzleNumber = 1;
     private string puzzleDifficulty = "Intermediate";
 
     private void OnClickLoadPuzzle()
         {
-        Puzzle = Puzzle.LoadPuzzle(puzzleNumber - 1, puzzleDifficulty);
-        StateHasChanged();
+        Puzzle newPuzzle = Puzzle.LoadPuzzle(puzzleNumber - 1, puzzleDifficulty);
+        if (newPuzzle != null)
+            {
+            this.Puzzle = newPuzzle;
+            StateHasChanged();
+            }
         }
 
-    private void OnClickSolvePuzzle()
+    private void ReportSolutionProgress(object sender, Puzzle.SolutionProgressReport progessReport)
         {
-        Puzzle.Solve(1);
-        if (Puzzle.Solutions.Count > 0)
+        //Puzzle.SetValue(progessReport.Row, progessReport.Column, progessReport.Value);
+        //StateHasChanged();
+        }
+
+    private async Task OnClickSolvePuzzle()
+        {
+        Progress<Puzzle.SolutionProgressReport> progress = new Progress<Puzzle.SolutionProgressReport>();
+        progress.ProgressChanged += ReportSolutionProgress;
+        int solutions = await Puzzle.Solve(1, progress);
+
+        if (solutions > 0)
             {
             Puzzle solution = Puzzle.Solutions[0];
             for (int row=0; row < Puzzle.rows; row++)
@@ -62,14 +76,31 @@
             }
         }
 
+    private void SetFocus(int row, int column)
+        {
+        SudokuCell sudokuCell = Puzzle.Cells[row, column].View as SudokuCell;
+
+        if (sudokuCell != null)
+            {
+            sudokuCell.Focus();
+            }
+        }
+
+    private const bool skipReadOnly = false;
+
     public void NavigateUp(SudokuCell sudokuCell)
         {
         Puzzle.Cell fromCell = sudokuCell.Cell;
         int row = fromCell.Row;
         int column = fromCell.Column;
 
+        int rowsChecked = 0;
         do
             {
+            rowsChecked++;
+            if (rowsChecked > Puzzle.rows)
+                return;
+
             row--;
             // wrap to bottom
             if (row < 0)
@@ -77,6 +108,83 @@
                 row = Puzzle.rows - 1;
                 }
 
-            } while (Puzzle.Cells[row, column].ReadOnly);
+            } while (skipReadOnly && Puzzle.Cells[row, column].ReadOnly);
+
+        SetFocus(row, column);
         }
-}
+
+    public void NavigateDown(SudokuCell sudokuCell)
+        {
+        Puzzle.Cell fromCell = sudokuCell.Cell;
+        int row = fromCell.Row;
+        int column = fromCell.Column;
+
+        int rowsChecked = 0;
+        do
+            {
+            rowsChecked++;
+            if (rowsChecked > Puzzle.rows)
+                return;
+
+            row++;
+            // wrap to top
+            if (row >= Puzzle.rows)
+                {
+                row = 0;
+                }
+
+            } while (skipReadOnly && Puzzle.Cells[row, column].ReadOnly);
+
+        SetFocus(row, column);
+        }
+
+    public void NavigateLeft(SudokuCell sudokuCell)
+        {
+        Puzzle.Cell fromCell = sudokuCell.Cell;
+        int row = fromCell.Row;
+        int column = fromCell.Column;
+
+        int columnsChecked = 0;
+        do
+            {
+            columnsChecked++;
+            if (columnsChecked > Puzzle.columns)
+                return;
+
+            column--;
+            // wrap to right
+            if (column < 0)
+                {
+                column = Puzzle.columns - 1;
+                }
+
+            } while (skipReadOnly && Puzzle.Cells[row, column].ReadOnly);
+
+        SetFocus(row, column);
+        }
+
+    public void NavigateRight(SudokuCell sudokuCell)
+        {
+        Puzzle.Cell fromCell = sudokuCell.Cell;
+        int row = fromCell.Row;
+        int column = fromCell.Column;
+
+        int columnsChecked = 0;
+        do
+            {
+            columnsChecked++;
+            if (columnsChecked > Puzzle.columns)
+                return;
+
+            column++;
+            // wrap to left
+            if (column >= Puzzle.columns)
+                {
+                column = 0;
+                }
+
+            } while (skipReadOnly && Puzzle.Cells[row, column].ReadOnly);
+
+        SetFocus(row, column);
+        }
+    }

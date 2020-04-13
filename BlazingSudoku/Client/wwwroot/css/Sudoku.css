@@ -14,11 +14,11 @@
 .sudoku-cell
 {
     background-color: aliceblue;
-    flex: 1;
+    flex-basis: 3.5rem;
     border: 1px solid black;
     text-align: center;
     font-size: 1.5rem;
-    padding: 5px;
+    padding: 0.3rem;
 }
 
 .sudoku-cell:focus

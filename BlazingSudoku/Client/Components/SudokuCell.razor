@@ -1,7 +1,7 @@
 ﻿@using Sudoku;
 @inject IJSRuntime JSRuntime;
 
-<div @ref="div" class="@CellClass" tabindex="@(TabIndex)" @onkeypress="OnKeyPress" @onkeydown="OnKeyDown">
+<div @ref="div" id="@ID" class="@CellClass" tabindex="@(TabIndex)" @onkeypress="OnKeyPress" @onkeydown="OnKeyDown">
     @DisplayString
 </div>
 
@@ -61,49 +61,69 @@
 
     private void OnKeyDown(KeyboardEventArgs args)
         {
-        switch (args.Key)
+        switch (args.Code)
             {
             case "ArrowUp":
                 SudokuBoard.NavigateUp(this);
+                break;
+
+            case "ArrowDown":
+                SudokuBoard.NavigateDown(this);
+                break;
+
+            case "ArrowLeft":
+                SudokuBoard.NavigateLeft(this);
+                break;
+
+            case "ArrowRight":
+                SudokuBoard.NavigateRight(this);
+                break;
+
+            case "Space":
+            case "Delete":
+            case "Backspace":
+                UpdateValue(0);
                 break;
             }
         }
 
     private void OnKeyPress(KeyboardEventArgs args)
         {
-        byte newValue = 0;
-
         switch (args.Key)
             {
             case "1":
-                newValue = 1;
+                UpdateValue(1);
                 break;
             case "2":
-                newValue = 2;
+                UpdateValue(2);
                 break;
             case "3":
-                newValue = 3;
+                UpdateValue(3);
                 break;
             case "4":
-                newValue = 4;
+                UpdateValue(4);
                 break;
             case "5":
-                newValue = 5;
+                UpdateValue(5);
                 break;
             case "6":
-                newValue = 6;
+                UpdateValue(6);
                 break;
             case "7":
-                newValue = 7;
+                UpdateValue(7);
                 break;
             case "8":
-                newValue = 8;
+                UpdateValue(8);
                 break;
             case "9":
-                newValue = 9;
+                UpdateValue(9);
                 break;
             }
 
+        }
+
+    private void UpdateValue(byte newValue)
+        {
         if (Cell.Value != newValue)
             {
             List<SudokuCell> sudokuCellsToUpdate = new List<SudokuCell>();
@@ -140,5 +160,13 @@
 
             this.StateHasChanged();
             }
+        }
+
+    private string ID { get { return $"cell-{Cell.Row}-{Cell.Column}"; } }
+    public void Focus()
+        {
+        // Dang! No easy way to set the focus.
+        // There's JavaScript code in index.html that can be called to set the focus to an element by id.
+        JSRuntime.InvokeAsync<int>("setFocus", (object) ID);
         }
     }
