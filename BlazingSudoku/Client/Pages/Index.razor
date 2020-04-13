@@ -3,4 +3,61 @@
 
 <h1>Sudoku!</h1>
 
-<SudokuBoard Puzzle="@(Sudoku.Puzzle.GeneratePuzzle())"/>
+<div class="sudoku-page">
+    <SudokuBoard Puzzle="@(Sudoku.Puzzle.GeneratePuzzle())"/>
+    <div class="sudoku-help">
+        <p>
+            <b>To load a new puzzle:</b>
+        </p>
+        <ul>
+            <li>
+                Select "Simple", "Easy", "Intermediate", or "Expert".
+            </li>
+            <li>
+                Enter a number from 1 to 100.
+            </li>
+            <li>
+                Click the "Load" button.
+            </li>
+        </ul>
+        <p>
+            <b>To change a cell:</b>
+        </p>
+        <ul>
+            <li>
+                Click on it.
+            </li>
+            <li>
+                Press 1-9 to set the cell value.
+            </li>
+        </ul>
+        <p>
+            <b>To navigate between cells:</b>
+        </p>
+        <ul>
+            <li>
+                Press Tab to move to the next cell.
+            </li>
+            <li>
+                Use arrow keys to move to the next cell in that direction.
+            </li>
+        </ul>
+        <p>
+            <b>Use any of these keys to clear a cell:</b>
+        </p>
+        <ul>
+            <li>
+                Space Key
+            </li>
+            <li>
+                Backspace Key
+            </li>
+            <li>
+                Delete Key
+            </li>
+        </ul>
+        <p>
+            <b>Red numbers indicate conflicts.</b>
+        </p>
+    </div>
+</div>

@@ -1,7 +1,23 @@
-﻿
+﻿.sudoku-page
+{
+    display: flex;
+}
+
+.sudoku-help
+{
+    padding-left: 2rem;
+    flex-basis: auto;
+}
+
+.sudoku-help p
+{
+    margin-bottom: 0.25rem;
+}
+
 .sudoku-board
 {
     display: flex;
+    flex-basis: auto;
     flex-direction: column;
 }
 
