@@ -1,16 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 using System.Threading.Tasks;
 
 namespace Sudoku
     {
     public class Puzzle
         {
-        public const int rows = 9;
-        public const int columns = 9;
-        public const int rowsInBlock = 3;
-        public const int columnsInBlock = 3;
+        public int BlockSize { get; set; }  = 4;
+        public int Rows { get { return BlockSize * BlockSize; } }
+        public int Columns { get { return BlockSize * BlockSize; } }
 
         // We keep an array of Cell objects as well as an array of just the cell values.
         // When solving puzzles, we create multiple copies of the Puzzle, and all we need is the cellValues.
@@ -23,10 +21,10 @@ namespace Sudoku
                 {
                 if (this.cells == null)
                     {
-                    this.cells = new Cell[rows, columns];
-                    for (int row = 0; row < rows; row++)
+                    this.cells = new Cell[Rows, Columns];
+                    for (int row = 0; row < Rows; row++)
                         {
-                        for (int column = 0; column < columns; column++)
+                        for (int column = 0; column < Columns; column++)
                             {
                             Cell newCell = new Cell(this, row, column);
                             this.cells[row, column] = newCell;
@@ -80,9 +78,9 @@ namespace Sudoku
             Puzzle puzzle = new Puzzle();
             int iChar = 0;
 
-            for (int row = 0; row < rows; row++)
+            for (int row = 0; row < puzzle.Rows; row++)
                 {
-                for (int column = 0; column < columns; column++)
+                for (int column = 0; column < puzzle.Columns; column++)
                     {
                     byte value = 0;
                     char ch = puzzleString[iChar++];
@@ -110,10 +108,11 @@ namespace Sudoku
                 }
             }
 
-        public Puzzle()
+        public Puzzle(int blockSize = 3)
             {
-            this.cellValues = new byte[rows, columns];
+            this.cellValues = new byte[Rows, Columns];
             this.solutions = null;
+            this.BlockSize = blockSize;
             }
 
         public Puzzle(Puzzle puzzle) : this(puzzle.cellValues, puzzle.EmptyCells) { }
@@ -128,9 +127,9 @@ namespace Sudoku
             {
             this.cellValues = newData.Clone() as byte[,];
             this.EmptyCells = 0;
-            for (int row = 0; row < rows; row++)
+            for (int row = 0; row < Rows; row++)
                 {
-                for (int column = 0; column < columns; column++)
+                for (int column = 0; column < Columns; column++)
                     {
                     if (this.cellValues[row, column] == 0)
                         {
@@ -142,10 +141,10 @@ namespace Sudoku
 
         public void Clear(bool all = false)
             {
-            this.EmptyCells = rows * columns;
-            for (int row = 0; row < rows; row++)
+            this.EmptyCells = Rows * Columns;
+            for (int row = 0; row < Rows; row++)
                 {
-                for (int column = 0; column < columns; column++)
+                for (int column = 0; column < Columns; column++)
                     {
                     if (all || !Cells[row, column].ReadOnly)
                         {
@@ -181,7 +180,7 @@ namespace Sudoku
 
         public bool IsValueInRow(int row, byte value)
             {
-            for (int column = 0; column < columns; column++)
+            for (int column = 0; column < Columns; column++)
                 {
                 if (this.cellValues[row, column] == value)
                     return true;
@@ -191,7 +190,7 @@ namespace Sudoku
             }
         public bool IsValueInColumn(int column, byte value)
             {
-            for (int row = 0; row < rows; row++)
+            for (int row = 0; row < Rows; row++)
                 {
                 if (this.cellValues[row, column] == value)
                     return true;
@@ -202,12 +201,12 @@ namespace Sudoku
 
         public bool IsValueInBlock(int testRow, int testColumn, byte value)
             {
-            int rowBlock = testRow / rowsInBlock;
-            int rowStart = rowBlock * rowsInBlock;
-            int rowEnd = rowStart + rowsInBlock;
-            int columnBlock = testColumn / columnsInBlock;
-            int columnStart = columnBlock * columnsInBlock;
-            int columnEnd = columnStart + columnsInBlock;
+            int rowBlock = testRow / BlockSize;
+            int rowStart = rowBlock * BlockSize;
+            int rowEnd = rowStart + BlockSize;
+            int columnBlock = testColumn / BlockSize;
+            int columnStart = columnBlock * BlockSize;
+            int columnEnd = columnStart + BlockSize;
 
             for (int row = rowStart; row < rowEnd; row++)
                 {
@@ -255,10 +254,10 @@ namespace Sudoku
 
             SolutionProgressReport progessReport = new SolutionProgressReport();
 
-            for (int row = 0; row < rows; row++)
+            for (int row = 0; row < Rows; row++)
                 {
                 progessReport.Row = row;
-                for (int column = 0; column < columns; column++)
+                for (int column = 0; column < Columns; column++)
                     {
                     progessReport.Column = column;
                     if (this.cellValues[row, column] == 0)
@@ -374,7 +373,7 @@ namespace Sudoku
 
             int row = cell.Row;
 
-            for (int column = 0; column < columns; column++)
+            for (int column = 0; column < Columns; column++)
                 {
                 if (!((row == targetRow) && (column == targetColumn)))
                     {
@@ -396,7 +395,7 @@ namespace Sudoku
             byte targetValue = cell.Value;
             int column = cell.Column;
 
-            for (int row = 0; row < rows; row++)
+            for (int row = 0; row < Rows; row++)
                 {
                 if (!((row == targetRow) && (column == targetColumn)))
                     {
@@ -417,12 +416,12 @@ namespace Sudoku
             int targetColumn = cell.Column;
             byte targetValue = cell.Value;
 
-            int rowBlock = targetRow / rowsInBlock;
-            int rowStart = rowBlock * rowsInBlock;
-            int rowEnd = rowStart + rowsInBlock;
-            int columnBlock = targetColumn / columnsInBlock;
-            int columnStart = columnBlock * columnsInBlock;
-            int columnEnd = columnStart + columnsInBlock;
+            int rowBlock = targetRow / BlockSize;
+            int rowStart = rowBlock * BlockSize;
+            int rowEnd = rowStart + BlockSize;
+            int columnBlock = targetColumn / BlockSize;
+            int columnStart = columnBlock * BlockSize;
+            int columnEnd = columnStart + BlockSize;
 
             for (int row = rowStart; row < rowEnd; row++)
                 {

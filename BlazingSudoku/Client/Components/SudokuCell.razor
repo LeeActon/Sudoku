@@ -28,11 +28,13 @@
         {
         get
             {
-            return String.Format("sudoku-cell-border-{0}-{1} {2} {3} sudoku-cell ",
-                Cell.Row % Puzzle.rowsInBlock,
-                Cell.Column % Puzzle.columnsInBlock,
+            return String.Format("sudoku-cell-border-{0}-{1}-{2} {3} {4} sudoku-cell sudoku-cell-block-{5}",
+                SudokuBoard.Puzzle.BlockSize,
+                Cell.Row % SudokuBoard.Puzzle.BlockSize,
+                Cell.Column % SudokuBoard.Puzzle.BlockSize,
                 (Cell.ConflictingCells?.Count > 0) ? "sudoku-cell-conflict" : "",
-                Cell.ReadOnly ? "sudoku-cell-readonly" : ""
+                Cell.ReadOnly ? "sudoku-cell-readonly" : "",
+                SudokuBoard.Puzzle.BlockSize
                 );
             }
         }
@@ -44,7 +46,14 @@
             if (Cell.Value == 0)
                 return (MarkupString) "&nbsp;";
 
-            return (MarkupString) String.Format("{0}", Cell.Value);
+            // For 3x3 board: the digits are 1-9.
+            // For 4x4 board: the digits are 0-F (i.e. hex).
+            int offset = (SudokuBoard.Puzzle.BlockSize == 3) ? 0 : 1;
+            int value = Cell.Value - offset;
+
+            char ch = (char)((value < 10) ? ('0' + value) : ('A' + value - 10));
+
+            return (MarkupString) $"{ch}";
             }
         }
 
@@ -55,7 +64,7 @@
             if (Cell.ReadOnly)
                 return -1;
 
-            return 100 + Cell.Row * Puzzle.columns + Cell.Column;
+            return 100 + Cell.Row * SudokuBoard.Puzzle.Columns + Cell.Column;
             }
         }
 
@@ -89,40 +98,68 @@
 
     private void OnKeyPress(KeyboardEventArgs args)
         {
+        byte offset = (byte)((SudokuBoard.Puzzle.BlockSize == 3) ? 0 : 1);
+
         switch (args.Key)
             {
+            case "0":
+                UpdateValue(0 + offset);
+                break;
             case "1":
-                UpdateValue(1);
+                UpdateValue(1 + offset);
                 break;
             case "2":
-                UpdateValue(2);
+                UpdateValue(2 + offset);
                 break;
             case "3":
-                UpdateValue(3);
+                UpdateValue(3 + offset);
                 break;
             case "4":
-                UpdateValue(4);
+                UpdateValue(4 + offset);
                 break;
             case "5":
-                UpdateValue(5);
+                UpdateValue(5 + offset);
                 break;
             case "6":
-                UpdateValue(6);
+                UpdateValue(6 + offset);
                 break;
             case "7":
-                UpdateValue(7);
+                UpdateValue(7 + offset);
                 break;
             case "8":
-                UpdateValue(8);
+                UpdateValue(8 + offset);
                 break;
             case "9":
-                UpdateValue(9);
+                UpdateValue(9 + offset);
+                break;
+            case "A":
+            case "a":
+                UpdateValue(10 + offset);
+                break;
+            case "B":
+            case "b":
+                UpdateValue(11 + offset);
+                break;
+            case "C":
+            case "c":
+                UpdateValue(12 + offset);
+                break;
+            case "D":
+            case "d":
+                UpdateValue(13 + offset);
+                break;
+            case "E":
+            case "e":
+                UpdateValue(14 + offset);
+                break;
+            case "F":
+            case "f":
+                UpdateValue(15 + offset);
                 break;
             }
-
         }
 
-    private void UpdateValue(byte newValue)
+    private void UpdateValue(int newValue)
         {
         bool readOnly = (Cell.ReadOnly && !SudokuBoard.EditMode);
 
@@ -142,7 +179,7 @@
                     }
                 }
 
-            Cell.Value = newValue;
+            Cell.Value = (byte) newValue;
             if (SudokuBoard.EditMode)
                 {
                 Cell.ReadOnly = (newValue != 0);

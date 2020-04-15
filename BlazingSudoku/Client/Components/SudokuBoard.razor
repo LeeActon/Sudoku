@@ -15,16 +15,16 @@
         <button @onclick="OnClickSolvePuzzle">Solve</button>
     </div>
     <CascadingValue Value="this">
-        @for (int row = 0; row < Puzzle.rows; row++)
+        @for (int row = 0; row < Puzzle.Rows; row++)
             {
-            if ((row % Puzzle.rowsInBlock) == 0)
+            if ((row % Puzzle.BlockSize) == 0)
                 {
                 <div class="sudoku-row-gap"/>
                 }
             <div class="sudoku-row">
-                @for (int column = 0; column < Puzzle.columns; column++)
+                @for (int column = 0; column < Puzzle.Columns; column++)
                     {
-                    if ((column % Puzzle.columnsInBlock) == 0)
+                    if ((column % Puzzle.BlockSize) == 0)
                         {
                         <div class="sudoku-column-gap"/>
                         }
@@ -42,17 +42,40 @@
         </div>
         <label for="editPuzzle">Edit Puzzle</label>
         <input type="checkbox" id="editPuzzle" @bind="EditMode" />
+        <label for="hexPuzzle">Hex</label>
+        <input type="checkbox" id="hexPuzzle" @bind="HexMode"/>
         <div class="status-line">@statusMessage</div>
     </div>
 </div>
 
 @code
     {
-        [Parameter] public Puzzle Puzzle { get; set; }
+    [Parameter] public Puzzle Puzzle { get; set; }
     private int puzzleNumber = 1;
     private string puzzleDifficulty = "Intermediate";
     private string statusMessage = "";
     public bool EditMode { get; set; } = false;
+    private bool hexMode = false;
+    public bool HexMode
+        {
+        get
+            {
+            return this.hexMode;
+            }
+        set
+            {
+            this.hexMode = value;
+            if (this.hexMode)
+                {
+                Puzzle = new Puzzle(4);
+                }
+            else
+                {
+                OnClickLoadPuzzle(); // For now LoadPuzzle() only loads 3x3 block size
+                }
+            StateHasChanged();
+            }
+        }
 
     private void OnClickClearPuzzle()
         {
@@ -69,6 +92,7 @@
         Puzzle newPuzzle = Puzzle.LoadPuzzle(newPuzzleNumber - 1, newPuzzleDifficulty);
         if (newPuzzle != null)
             {
+            this.hexMode = false;  // Load puzzle only loads 3x3 puzzles for now.
             this.Puzzle = newPuzzle;
             this.puzzleNumber = newPuzzleNumber;
             this.puzzleDifficulty = newPuzzleDifficulty;
@@ -104,9 +128,9 @@
             {
             this.statusMessage = $"Found {solutions} solutions.";
             Puzzle solution = Puzzle.Solutions[0];
-            for (int row=0; row < Puzzle.rows; row++)
+            for (int row=0; row < Puzzle.Rows; row++)
                 {
-                for (int column = 0; column < Puzzle.columns; column++)
+                for (int column = 0; column < Puzzle.Columns; column++)
                     {
                     Puzzle.Cells[row, column].Value = solution.Cells[row, column].Value;
                     }
@@ -141,14 +165,14 @@
         do
             {
             rowsChecked++;
-            if (rowsChecked > Puzzle.rows)
+            if (rowsChecked > Puzzle.Rows)
                 return;
 
             row--;
             // wrap to bottom
             if (row < 0)
                 {
-                row = Puzzle.rows - 1;
+                row = Puzzle.Rows - 1;
                 }
 
             } while (skipReadOnly && Puzzle.Cells[row, column].ReadOnly);
@@ -166,12 +190,12 @@
         do
             {
             rowsChecked++;
-            if (rowsChecked > Puzzle.rows)
+            if (rowsChecked > Puzzle.Rows)
                 return;
 
             row++;
             // wrap to top
-            if (row >= Puzzle.rows)
+            if (row >= Puzzle.Rows)
                 {
                 row = 0;
                 }
@@ -191,14 +215,14 @@
         do
             {
             columnsChecked++;
-            if (columnsChecked > Puzzle.columns)
+            if (columnsChecked > Puzzle.Columns)
                 return;
 
             column--;
             // wrap to right
             if (column < 0)
                 {
-                column = Puzzle.columns - 1;
+                column = Puzzle.Columns - 1;
                 }
 
             } while (skipReadOnly && Puzzle.Cells[row, column].ReadOnly);
@@ -216,12 +240,12 @@
         do
             {
             columnsChecked++;
-            if (columnsChecked > Puzzle.columns)
+            if (columnsChecked > Puzzle.Columns)
                 return;
 
             column++;
             // wrap to left
-            if (column >= Puzzle.columns)
+            if (column >= Puzzle.Columns)
                 {
                 column = 0;
                 }
