@@ -9,6 +9,36 @@
     flex-basis: auto;
 }
 
+.sudoku-top-line
+{
+    display: flex;
+    flex-direction:row;
+}
+
+.sudoku-bottom-line
+{
+    display: flex;
+    flex-direction:row-reverse;
+}
+
+.sudoku-bottom-line img
+{
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.sudoku-bottom-line input[type=checkbox]
+{
+    margin: 5px;
+}
+
+.status-line
+{
+    font-size: medium;
+    color: red;
+    flex:1;
+}
+
 .sudoku-help p
 {
     margin-bottom: 0.25rem;

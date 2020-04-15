@@ -136,14 +136,17 @@ namespace Sudoku
                 }
             }
 
-        public void Clear()
+        public void Clear(bool all = false)
             {
             this.EmptyCells = rows * columns;
             for (int row = 0; row < rows; row++)
                 {
                 for (int column = 0; column < columns; column++)
                     {
-                    this.data[row, column] = 0;
+                    if (all || !Cells[row, column].ReadOnly)
+                        {
+                        Cells[row, column].Value = 0;
+                        }
                     }
                 }
             }
@@ -237,8 +240,12 @@ namespace Sudoku
             return task.Result;
             }
 
-        public async Task<int> Solve(int maxSolutions, IProgress<SolutionProgressReport> progress)
+        public async Task<int> Solve(int maxSolutions, IProgress<SolutionProgressReport> progress, bool clear = false)
             {
+            if (clear)
+                {
+                this.solutions = null;
+                }
             if (Solutions.Count >= maxSolutions)
                 return Solutions.Count;
 
@@ -295,28 +302,25 @@ namespace Sudoku
                 get { return Puzzle.GetValue(Row, Column); }
                 set
                     {
-                    if (!ReadOnly)
+                    if (Puzzle.GetValue(Row, Column) != value)
                         {
-                        if (Puzzle.GetValue(Row, Column) != value)
+                        if (ConflictingCells != null)
                             {
-                            if (ConflictingCells != null)
+                            // This cell no longer conflicts with the same cells.
+                            // Remove this cell from the other cells' lists of conflicts.
+                            foreach (Cell conflictingCell in ConflictingCells)
                                 {
-                                // This cell no longer conflicts with the same cells.
-                                // Remove this cell from the other cells' lists of conflicts.
-                                foreach (Cell conflictingCell in ConflictingCells)
-                                    {
-                                    conflictingCell.RemoveConflictingCell(this);
-                                    }
-                                this.conflictingCells = null;
+                                conflictingCell.RemoveConflictingCell(this);
                                 }
+                            this.conflictingCells = null;
+                            }
 
-                            Puzzle.SetValue(Row, Column, value);
+                        Puzzle.SetValue(Row, Column, value);
 
-                            // Find new conflicts.
-                            if (value != 0)
-                                {
-                                Puzzle.UpdateConflicts(this);
-                                }
+                        // Find new conflicts.
+                        if (value != 0)
+                            {
+                            Puzzle.UpdateConflicts(this);
                             }
                         }
                     }

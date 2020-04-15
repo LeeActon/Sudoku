@@ -124,7 +124,9 @@
 
     private void UpdateValue(byte newValue)
         {
-        if (Cell.Value != newValue)
+        bool readOnly = (Cell.ReadOnly && !SudokuBoard.EditMode);
+
+        if (!readOnly && Cell.Value != newValue)
             {
             List<SudokuCell> sudokuCellsToUpdate = new List<SudokuCell>();
 
@@ -141,6 +143,10 @@
                 }
 
             Cell.Value = newValue;
+            if (SudokuBoard.EditMode)
+                {
+                Cell.ReadOnly = (newValue != 0);
+                }
 
             if (Cell.ConflictingCells != null)
                 {

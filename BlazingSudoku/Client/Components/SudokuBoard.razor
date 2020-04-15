@@ -2,7 +2,7 @@
 @using BlazingSudoku.Client.Components;
 
 <div class="sudoku-board">
-    <span>
+    <div class="sudoku-top-line">
         <select @bind="puzzleDifficulty">
             <option value="Simple">Simple</option>
             <option value="Easy">Easy</option>
@@ -11,8 +11,9 @@
         </select>
         <input type="text" @bind="puzzleNumber" placeholder="1-100"/>
         <button @onclick="OnClickLoadPuzzle">Load</button>
+        <button @onclick="OnClickClearPuzzle">Clear</button>
         <button @onclick="OnClickSolvePuzzle">Solve</button>
-    </span>
+    </div>
     <CascadingValue Value="this">
         @for (int row = 0; row < Puzzle.rows; row++)
             {
@@ -32,22 +33,58 @@
             </div>
             }
     </CascadingValue>
+    <div class="sudoku-bottom-line">
+        <div data-toggle="tooltip" data-placement="top" title="Load Next Puzzle">
+            <img src="svg/chevron-right.svg"  @onclick="OnClickLoadNextPuzzle"/>
+        </div>
+        <div data-toggle="tooltip" data-placement="top" title="Load Previous Puzzle">
+            <img src="svg/chevron-left.svg"  @onclick="OnClickLoadPrevPuzzle"/>
+        </div>
+        <label for="editPuzzle">Edit Puzzle</label>
+        <input type="checkbox" id="editPuzzle" @bind="EditMode" />
+        <div class="status-line">@statusMessage</div>
+    </div>
 </div>
 
 @code
     {
-    [Parameter] public Puzzle Puzzle { get; set; }
+        [Parameter] public Puzzle Puzzle { get; set; }
     private int puzzleNumber = 1;
     private string puzzleDifficulty = "Intermediate";
+    private string statusMessage = "";
+    public bool EditMode { get; set; } = false;
+
+    private void OnClickClearPuzzle()
+        {
+        Puzzle.Clear();
+        }
 
     private void OnClickLoadPuzzle()
         {
-        Puzzle newPuzzle = Puzzle.LoadPuzzle(puzzleNumber - 1, puzzleDifficulty);
+        LoadPuzzle(this.puzzleNumber, this.puzzleDifficulty);
+        }
+
+    private void LoadPuzzle(int newPuzzleNumber, string newPuzzleDifficulty)
+        {
+        Puzzle newPuzzle = Puzzle.LoadPuzzle(newPuzzleNumber - 1, newPuzzleDifficulty);
         if (newPuzzle != null)
             {
             this.Puzzle = newPuzzle;
+            this.puzzleNumber = newPuzzleNumber;
+            this.puzzleDifficulty = newPuzzleDifficulty;
+            this.statusMessage = "";
             StateHasChanged();
             }
+        }
+
+    private void OnClickLoadNextPuzzle()
+        {
+        LoadPuzzle(this.puzzleNumber + 1, this.puzzleDifficulty);
+        }
+
+    private void OnClickLoadPrevPuzzle()
+        {
+        LoadPuzzle(this.puzzleNumber - 1, this.puzzleDifficulty);
         }
 
     private void ReportSolutionProgress(object sender, Puzzle.SolutionProgressReport progessReport)
@@ -60,10 +97,12 @@
         {
         Progress<Puzzle.SolutionProgressReport> progress = new Progress<Puzzle.SolutionProgressReport>();
         progress.ProgressChanged += ReportSolutionProgress;
-        int solutions = await Puzzle.Solve(1, progress);
+        this.statusMessage = "Solving...";
+        int solutions = await Puzzle.Solve(10, progress, true);
 
         if (solutions > 0)
             {
+            this.statusMessage = $"Found {solutions} solutions.";
             Puzzle solution = Puzzle.Solutions[0];
             for (int row=0; row < Puzzle.rows; row++)
                 {
@@ -73,6 +112,10 @@
                     }
                 }
             StateHasChanged();
+            }
+        else
+            {
+            this.statusMessage = "No soltuions.";
             }
         }
 
