@@ -35,15 +35,15 @@ namespace PuzzleTester
                             Console.WriteLine();
 
                         Console.WriteLine(String.Format("{0} {1} {2}  {3} {4} {5}  {6} {7} {8}",
-                            solution.GetValue(row, 0),
-                            solution.GetValue(row, 1),
-                            solution.GetValue(row, 2),
-                            solution.GetValue(row, 3),
-                            solution.GetValue(row, 4),
-                            solution.GetValue(row, 5),
-                            solution.GetValue(row, 6),
-                            solution.GetValue(row, 7),
-                            solution.GetValue(row, 8)
+                            solution.Cells[row, 0].Value,
+                            solution.Cells[row, 1].Value,
+                            solution.Cells[row, 2].Value,
+                            solution.Cells[row, 3].Value,
+                            solution.Cells[row, 4].Value,
+                            solution.Cells[row, 5].Value,
+                            solution.Cells[row, 6].Value,
+                            solution.Cells[row, 7].Value,
+                            solution.Cells[row, 8].Value
                             ));
 
                         }

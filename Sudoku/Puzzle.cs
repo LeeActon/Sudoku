@@ -12,6 +12,10 @@ namespace Sudoku
         public const int rowsInBlock = 3;
         public const int columnsInBlock = 3;
 
+        // We keep an array of Cell objects as well as an array of just the cell values.
+        // When solving puzzles, we create multiple copies of the Puzzle, and all we need is the cellValues.
+        // The Cell objects are created on demand, and provide additional functionality needed for UI.
+        private byte[,] cellValues;
         public Cell[,] cells;
         public Cell[,] Cells
             {
@@ -37,6 +41,7 @@ namespace Sudoku
                 return this.cells;
                 }
             }
+
         public static Puzzle GeneratePuzzle()
             {
             Puzzle puzzle = LoadPuzzle(0, "Intermediate");
@@ -91,7 +96,6 @@ namespace Sudoku
             return puzzle;
             }
 
-        private byte[,] data;
         public int EmptyCells { get; set; }
 
         private List<Puzzle> solutions;
@@ -108,27 +112,27 @@ namespace Sudoku
 
         public Puzzle()
             {
-            this.data = new byte[rows, columns];
+            this.cellValues = new byte[rows, columns];
             this.solutions = null;
             }
 
-        public Puzzle(Puzzle puzzle) : this(puzzle.data, puzzle.EmptyCells) { }
+        public Puzzle(Puzzle puzzle) : this(puzzle.cellValues, puzzle.EmptyCells) { }
 
         public Puzzle(byte[,] newData, int emptyCells)
             {
-            this.data = newData.Clone() as byte[,];
+            this.cellValues = newData.Clone() as byte[,];
             this.EmptyCells = emptyCells;
             }
 
         public Puzzle(byte[,] newData)
             {
-            this.data = newData.Clone() as byte[,];
+            this.cellValues = newData.Clone() as byte[,];
             this.EmptyCells = 0;
             for (int row = 0; row < rows; row++)
                 {
                 for (int column = 0; column < columns; column++)
                     {
-                    if (this.data[row, column] == 0)
+                    if (this.cellValues[row, column] == 0)
                         {
                         this.EmptyCells++;
                         }
@@ -151,11 +155,11 @@ namespace Sudoku
                 }
             }
 
-        public void SetValue(int row, int column, byte value)
+        private void SetValue(int row, int column, byte value)
             {
-            byte oldValue = this.data[row, column];
+            byte oldValue = this.cellValues[row, column];
 
-            this.data[row, column] = value;
+            this.cellValues[row, column] = value;
 
             if (oldValue != value)
                 {
@@ -170,16 +174,16 @@ namespace Sudoku
                 }
             }
 
-        public byte GetValue(int row, int column)
+        private byte GetValue(int row, int column)
             {
-            return this.data[row, column];
+            return this.cellValues[row, column];
             }
 
         public bool IsValueInRow(int row, byte value)
             {
             for (int column = 0; column < columns; column++)
                 {
-                if (this.data[row, column] == value)
+                if (this.cellValues[row, column] == value)
                     return true;
                 }
 
@@ -189,7 +193,7 @@ namespace Sudoku
             {
             for (int row = 0; row < rows; row++)
                 {
-                if (this.data[row, column] == value)
+                if (this.cellValues[row, column] == value)
                     return true;
                 }
 
@@ -209,7 +213,7 @@ namespace Sudoku
                 {
                 for (int column = columnStart; column < columnEnd; column++)
                     {
-                    if (this.data[row, column] == value)
+                    if (this.cellValues[row, column] == value)
                         return true;
                     }
                 }
@@ -257,7 +261,7 @@ namespace Sudoku
                 for (int column = 0; column < columns; column++)
                     {
                     progessReport.Column = column;
-                    if (this.data[row, column] == 0)
+                    if (this.cellValues[row, column] == 0)
                         {
                         for (byte value = 1; value <= 9; value++)
                             {
@@ -276,7 +280,7 @@ namespace Sudoku
                     }
                 }
 
-            Solutions.Add(new Puzzle(this.data, this.EmptyCells));
+            Solutions.Add(new Puzzle(this.cellValues, this.EmptyCells));
 
             return Solutions.Count;
             }
@@ -374,7 +378,7 @@ namespace Sudoku
                 {
                 if (!((row == targetRow) && (column == targetColumn)))
                     {
-                    if (this.data[row, column] == targetValue)
+                    if (this.cellValues[row, column] == targetValue)
                         {
                         Cell matchingCell = this.Cells[row, column];
 
@@ -396,7 +400,7 @@ namespace Sudoku
                 {
                 if (!((row == targetRow) && (column == targetColumn)))
                     {
-                    if (this.data[row, column] == targetValue)
+                    if (this.cellValues[row, column] == targetValue)
                         {
                         Cell matchingCell = this.Cells[row, column];
 
@@ -425,7 +429,7 @@ namespace Sudoku
                 for (int column = columnStart; column < columnEnd; column++)
                     {
                     if (!((row == targetRow) && (column == targetColumn)))
-                        if (this.data[row, column] == targetValue)
+                        if (this.cellValues[row, column] == targetValue)
                             {
                             Cell matchingCell = Cells[row, column];
 

@@ -108,7 +108,7 @@
                 {
                 for (int column = 0; column < Puzzle.columns; column++)
                     {
-                    Puzzle.SetValue(row, column, solution.GetValue(row, column));
+                    Puzzle.Cells[row, column].Value = solution.Cells[row, column].Value;
                     }
                 }
             StateHasChanged();
