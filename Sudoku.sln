@@ -7,11 +7,11 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Sudoku", "Sudoku\Sudoku.csp
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PuzzleTester", "PuzzleTester\PuzzleTester.csproj", "{DE27B9E0-380D-4217-B704-7967EA05D5F1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazingSudoku.Server", "BlazingSudoku\Server\BlazingSudoku.Server.csproj", "{137979B8-C6CF-4ED7-A43D-A445717EBDC6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazingSudoku.Server", "BlazingSudoku\Server\BlazingSudoku.Server.csproj", "{137979B8-C6CF-4ED7-A43D-A445717EBDC6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazingSudoku.Client", "BlazingSudoku\Client\BlazingSudoku.Client.csproj", "{2D71C075-D89D-44B7-A835-0FDAFCC914E5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazingSudoku.Client", "BlazingSudoku\Client\BlazingSudoku.Client.csproj", "{2D71C075-D89D-44B7-A835-0FDAFCC914E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazingSudoku.Shared", "BlazingSudoku\Shared\BlazingSudoku.Shared.csproj", "{E48B2C1A-19C1-4545-A0A7-A7C4B25732EC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazingSudoku.Shared", "BlazingSudoku\Shared\BlazingSudoku.Shared.csproj", "{E48B2C1A-19C1-4545-A0A7-A7C4B25732EC}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

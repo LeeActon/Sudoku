@@ -1,0 +1,87 @@
+﻿<style>
+    .toggle-button
+    {
+        cursor: pointer;
+        margin: 4px;
+    }
+
+    .toggle-button-0
+    {
+        background-color: white;
+        color: black;
+    }
+
+    .toggle-button-0:hover
+    {
+        background-color: white;
+        color: red;
+    }
+
+    .toggle-button-1
+    {
+        background-color: black;
+        color: white;
+    }
+
+    .toggle-button-1:hover
+    {
+        background-color: red;
+        color: black;
+    }
+</style>
+
+<div class="@divClass" @onclick="OnClick">
+@divText
+</div>
+
+@code
+    {
+    [Parameter] public string[] StateStrings { get; set; }
+    private int state = 0;
+    [Parameter] public int State
+        {
+        get
+            {
+            return this.state;
+            }
+        set
+            {
+            this.state = value;
+            if (this.state >= StateStrings.Length)
+                {
+                this.state = 0;
+                }
+            StateHasChanged();
+            }
+        }
+    [Parameter] public EventCallback<int> StateChanged { get; set; }
+    [Parameter] public string[] StateClasses { get; set; }
+
+    private string divText { get { return ((State >= 0) && (State < StateStrings.Length)) ? StateStrings[State] : "-"; } }
+
+    private string divClass
+        {
+        get
+            {
+            string stateClass = "";
+            if (State >= 0)
+                {
+                if ((StateClasses != null) && (State < StateClasses.Length))
+                    {
+                    stateClass = StateClasses[State];
+                    }
+                else
+                    {
+                    stateClass =  $"toggle-button-{State}";
+                    }
+                }
+            return "toggle-button " + stateClass;
+            }
+        }
+
+    private async Task OnClick()
+        {
+        State++;
+        await StateChanged.InvokeAsync(this.state);
+        }
+    }

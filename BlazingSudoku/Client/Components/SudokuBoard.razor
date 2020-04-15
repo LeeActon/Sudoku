@@ -40,31 +40,77 @@
         <div data-toggle="tooltip" data-placement="top" title="Load Previous Puzzle">
             <img src="svg/chevron-left.svg"  @onclick="OnClickLoadPrevPuzzle"/>
         </div>
-        <label for="editPuzzle">Edit Puzzle</label>
-        <input type="checkbox" id="editPuzzle" @bind="EditMode" />
-        <label for="hexPuzzle">Hex</label>
-        <input type="checkbox" id="hexPuzzle" @bind="HexMode"/>
+        <ToggleButton @bind-State="EditModeState" StateStrings="@editModeStateStrings" StateClasses="@editModeStateClasses"/>
+        <ToggleButton @bind-State="HexModeState" StateStrings="@hexModeStateStrings" StateClasses="@hexModeStateClasses"/>
         <div class="status-line">@statusMessage</div>
     </div>
 </div>
 
+<style>
+    .hex-mode-3x3
+        {
+        background-color: lightgoldenrodyellow;
+        color: black;
+        }
+
+    .hex-mode-3x3:hover
+        {
+        background-color: yellow;
+        }
+
+    .hex-mode-4x4
+        {
+        background-color: lavender;
+        color: black;
+        }
+
+    .hex-mode-4x4:hover
+        {
+        background-color: lavenderblush;
+        }
+
+    .edit-mode-off
+        {
+        background-color: white;
+        color: black;
+        }
+
+    .edit-mode-off:hover
+        {
+        color: blue;
+        }
+
+    .edit-mode-on
+        {
+        background-color: cornflowerblue;
+        color: white;
+        }
+
+    .edit-mode-on:hover
+        {
+        color: yellow;
+        }
+</style>
+
 @code
     {
-    [Parameter] public Puzzle Puzzle { get; set; }
+        [Parameter] public Puzzle Puzzle { get; set; }
     private int puzzleNumber = 1;
     private string puzzleDifficulty = "Intermediate";
     private string statusMessage = "";
-    public bool EditMode { get; set; } = false;
+
+    private string[] hexModeStateStrings = { "3 x 3", "4 x 4" };
+    private string[] hexModeStateClasses = { "hex-mode-3x3", "hex-mode-4x4" };
     private bool hexMode = false;
-    public bool HexMode
+    public int HexModeState
         {
         get
             {
-            return this.hexMode;
+            return this.hexMode ? 1 : 0;
             }
         set
             {
-            this.hexMode = value;
+            this.hexMode = (value == 1);
             if (this.hexMode)
                 {
                 Puzzle = new Puzzle(4);
@@ -73,6 +119,22 @@
                 {
                 OnClickLoadPuzzle(); // For now LoadPuzzle() only loads 3x3 block size
                 }
+            StateHasChanged();
+            }
+        }
+
+    private string[] editModeStateStrings = { "Edit: Off", "Edit: On" };
+    private string[] editModeStateClasses = { "edit-mode-off", "edit-mode-on" };
+    public bool EditMode { get; set; } = false;
+    private int EditModeState
+        {
+        get
+            {
+            return this.EditMode ? 1 : 0;
+            }
+        set
+            {
+            this.EditMode = (value == 1);
             StateHasChanged();
             }
         }
