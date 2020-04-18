@@ -1,6 +1,7 @@
 ﻿using System;
+using SparksInTheSoftware.Sudoku;
 
-namespace PuzzleTester
+namespace SparksInTheSoftware.PuzzleTester
     {
     class Program
         {
@@ -20,14 +21,14 @@ namespace PuzzleTester
             };
         static void Main(string[] args)
             {
-            Sudoku.Puzzle puzzle = new Sudoku.Puzzle(puzzle1);
+            Puzzle puzzle = new Puzzle(puzzle1);
 
             puzzle.Solve(10);
 
             if (puzzle.Solutions.Count > 0)
                 {
                 Console.WriteLine((puzzle.Solutions.Count > 1) ? "Solutions:" : "Solution:");
-                foreach (Sudoku.Puzzle solution in puzzle.Solutions)
+                foreach (Puzzle solution in puzzle.Solutions)
                     {
                     for (int row = 0; row < 9; row++)
                         {

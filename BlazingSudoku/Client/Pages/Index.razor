@@ -1,10 +1,11 @@
 ﻿@page "/Sudoku"
-@using BlazingSudoku.Client.Components;
+@using SparksInTheSoftware.BlazingSudoku.Client.Components;
+@using SparksInTheSoftware.Sudoku; 
 
 <h1>Sudoku!</h1>
 
 <div class="sudoku-page">
-    <SudokuBoard Puzzle="@(Sudoku.Puzzle.GeneratePuzzle())"/>
+    <SudokuBoard Puzzle="@(Puzzle.GeneratePuzzle())"/>
     <div class="sudoku-help">
         <p>
             <b>To load a new puzzle:</b>

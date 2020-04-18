@@ -3,6 +3,8 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <DisableImplicitComponentsAnalyzers>true</DisableImplicitComponentsAnalyzers>
+    <AssemblyName>SparksInTheSoftware.BlazingSudoku.Server</AssemblyName>
+    <RootNamespace>SparksInTheSoftware.BlazingSudoku.Server</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Sudoku
+namespace SparksInTheSoftware.Sudoku
     {
     public class Puzzle
         {
