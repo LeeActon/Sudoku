@@ -159,11 +159,16 @@
             }
         }
 
+    public bool ValueInRange(int value)
+        {
+        return ((value >= 1) && (value <= SudokuBoard.Puzzle.Columns));
+        }
+
     private void UpdateValue(int newValue)
         {
         bool readOnly = (Cell.ReadOnly && !SudokuBoard.EditMode);
 
-        if (!readOnly && Cell.Value != newValue)
+        if (!readOnly && (Cell.Value != newValue) && ValueInRange(newValue))
             {
             List<SudokuCell> sudokuCellsToUpdate = new List<SudokuCell>();
 
