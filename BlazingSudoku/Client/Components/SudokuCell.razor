@@ -1,7 +1,7 @@
 ﻿@using SparksInTheSoftware.Sudoku;
 @inject IJSRuntime JSRuntime;
 
-<div @ref="div" id="@ID" class="@CellClass" tabindex="@(TabIndex)" @onkeypress="OnKeyPress" @onkeydown="OnKeyDown">
+<div @ref="rootElement" class="@CellClass" tabindex="@(TabIndex)" @onkeypress="OnKeyPress" @onkeydown="OnKeyDown">
     @DisplayString
 </div>
 
@@ -22,7 +22,7 @@
     [Parameter] public string ColorClass { get; set; }
     [CascadingParameter] public SudokuBoard SudokuBoard { get; set; }
 
-    private ElementReference div;
+    private ElementReference rootElement;
 
     private string CellClass
         {
@@ -205,11 +205,10 @@
             }
         }
 
-    private string ID { get { return $"cell-{Cell.Row}-{Cell.Column}"; } }
     public void Focus()
         {
         // Dang! No easy way to set the focus.
         // There's JavaScript code in index.html that can be called to set the focus to an element by id.
-        JSRuntime.InvokeAsync<int>("setFocus", (object) ID);
+        JSRuntime.InvokeAsync<int>("setFocus", (object) rootElement);
         }
     }

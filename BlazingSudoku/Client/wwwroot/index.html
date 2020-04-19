@@ -22,14 +22,10 @@
     <script src="_framework/blazor.webassembly.js"></script>
     <script>
         // Function that can be called from C# to set focus to an element.
-        window.setFocus = (id) =>
+        window.setFocus = (elem) =>
             {
-            var item = document.getElementById(id);
-            if (item != null)
-                {
-                item.focus();
-                }
-        };
+            elem.focus();
+            };
     </script>
 </body>
 
