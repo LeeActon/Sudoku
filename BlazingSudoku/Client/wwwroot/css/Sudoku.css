@@ -6,37 +6,37 @@
 .sudoku-help
 {
     padding-left: 2rem;
-    flex-basis: auto;
+    flex: 1;
 }
 
 .sudoku-top-line
 {
     display: flex;
-    flex-direction:row;
+    flex-direction: row;
 }
 
-.sudoku-bottom-line
+.sudoku-second-line
 {
     display: flex;
-    flex-direction:row-reverse;
+    flex-direction: row;
 }
 
-.sudoku-bottom-line img
-{
-    width: 1.5rem;
-    height: 1.5rem;
-}
+    .sudoku-second-line img
+    {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
 
-.sudoku-bottom-line input[type=checkbox]
-{
-    margin: 5px;
-}
+    .sudoku-second-line input[type=checkbox]
+    {
+        margin: 5px;
+    }
 
 .status-line
 {
     font-size: medium;
     color: red;
-    flex:1;
+    flex-basis: 20rem;
 }
 
 .sudoku-help p
@@ -47,7 +47,7 @@
 .sudoku-board
 {
     display: flex;
-    flex-basis: auto;
+    flex: 2;
     flex-direction: column;
 }
 
@@ -62,13 +62,17 @@
     background-color: aliceblue;
     border: 1px solid black;
     text-align: center;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
 }
 
-.sudoku-cell:focus
-{
-    background-color: black;
-    color: white;
-}
+    .sudoku-cell:focus
+    {
+        background-color: black;
+        color: white;
+    }
 
 .sudoku-cell-block-3
 {
@@ -78,6 +82,20 @@
 }
 
 .sudoku-cell-block-4
+{
+    flex-basis: 2rem;
+    font-size: 1rem;
+    padding: 0;
+}
+
+.sudoku-cell-block-5
+{
+    flex-basis: 2rem;
+    font-size: 1rem;
+    padding: 0;
+}
+
+.sudoku-cell-block-6
 {
     flex-basis: 2rem;
     font-size: 1rem;
@@ -95,169 +113,27 @@
     color: red;
 }
 
-/* Borders for 3 x 3 block size */
-
-/* Top left corner */
-.sudoku-cell-border-3-0-0
+/*
+    The outer borders of the outer cells need to be twice as big as the boarders of
+    the inner cells because their borders double up because they are next to each other.
+*/
+.sudoku-cell-border-top
 {
-    border-top:2px solid black;
-    border-left: 2px solid black;
-    border-bottom: 1px solid black;
-    border-right: 1px solid black;
+    border-top: 2px solid black;
 }
 
-/* Top middle cell */
-.sudoku-cell-border-3-0-1
+.sudoku-cell-border-bottom
 {
-    border-top:2px solid black;
-    border-left: 1px solid black;
-    border-bottom: 1px solid black;
-    border-right: 1px solid black;
-}
-
-/* Top right corner */
-.sudoku-cell-border-3-0-2
-{
-    border-top:2px solid black;
-    border-left: 1px solid black;
-    border-bottom: 1px solid black;
-    border-right: 2px solid black;
-}
-
-/* Left side middle row */
-.sudoku-cell-border-3-1-0
-{
-    border-top:1px solid black;
-    border-left: 2px solid black;
-    border-bottom: 1px solid black;
-    border-right: 1px solid black;
-}
-
-/* Center cell */
-.sudoku-cell-border-3-1-1
-{
-    border-top:1px solid black;
-    border-left: 1px solid black;
-    border-bottom: 1px solid black;
-    border-right: 1px solid black;
-}
-
-/* Right side middle row */
-.sudoku-cell-border-3-1-2
-{
-    border-top:1px solid black;
-    border-left: 1px solid black;
-    border-bottom: 1px solid black;
-    border-right: 2px solid black;
-}
-
-/* Bottom left corner */
-.sudoku-cell-border-3-2-0
-{
-    border-top:1px solid black;
-    border-left: 2px solid black;
     border-bottom: 2px solid black;
-    border-right: 1px solid black;
 }
 
-/* Bottom middle cell */
-.sudoku-cell-border-3-2-1
+.sudoku-cell-border-left
 {
-    border-top:1px solid black;
-    border-left: 1px solid black;
-    border-bottom: 2px solid black;
-    border-right: 1px solid black;
-}
-
-/* Bottom right corner */
-.sudoku-cell-border-3-2-2
-{
-    border-top:1px solid black;
-    border-left: 1px solid black;
-    border-bottom: 2px solid black;
-    border-right: 2px solid black;
-}
-
-/* Borders for 4 x 4 block size */
-
-/* Top left corner */
-.sudoku-cell-border-4-0-0
-{
-    border-top:2px solid black;
     border-left: 2px solid black;
-    border-bottom: 1px solid black;
-    border-right: 1px solid black;
 }
 
-/* Top two middle cells */
-.sudoku-cell-border-4-0-1, .sudoku-cell-border-4-0-2
+.sudoku-cell-border-right
 {
-    border-top:2px solid black;
-    border-left: 1px solid black;
-    border-bottom: 1px solid black;
-    border-right: 1px solid black;
-}
-
-/* Top right corner */
-.sudoku-cell-border-4-0-3
-{
-    border-top:2px solid black;
-    border-left: 1px solid black;
-    border-bottom: 1px solid black;
-    border-right: 2px solid black;
-}
-
-/* Two right side middle rows*/
-.sudoku-cell-border-4-1-0, .sudoku-cell-border-4-2-0
-{
-    border-top:1px solid black;
-    border-left: 2px solid black;
-    border-bottom: 1px solid black;
-    border-right: 1px solid black;
-}
-
-/* Four center cells */
-.sudoku-cell-border-4-1-1, .sudoku-cell-border-4-1-2, .sudoku-cell-border-4-2-1, .sudoku-cell-border-4-2-2
-{
-    border-top:1px solid black;
-    border-left: 1px solid black;
-    border-bottom: 1px solid black;
-    border-right: 1px solid black;
-}
-
-/* Two right side middle cells*/
-.sudoku-cell-border-4-1-3, .sudoku-cell-border-4-2-3
-{
-    border-top:1px solid black;
-    border-left: 1px solid black;
-    border-bottom: 1px solid black;
-    border-right: 2px solid black;
-}
-
-/* Bottom right corner */
-.sudoku-cell-border-4-3-0
-{
-    border-top:1px solid black;
-    border-left: 2px solid black;
-    border-bottom: 2px solid black;
-    border-right: 1px solid black;
-}
-
-/* Two bottom middle columns */
-.sudoku-cell-border-4-3-1, .sudoku-cell-border-4-3-2
-{
-    border-top:1px solid black;
-    border-left: 1px solid black;
-    border-bottom: 2px solid black;
-    border-right: 1px solid black;
-}
-
-/* bottom right corner */
-.sudoku-cell-border-4-3-3
-{
-    border-top:1px solid black;
-    border-left: 1px solid black;
-    border-bottom: 2px solid black;
     border-right: 2px solid black;
 }
 

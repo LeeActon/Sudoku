@@ -6,9 +6,37 @@ namespace SparksInTheSoftware.Sudoku
     {
     public class Puzzle
         {
-        public int BlockSize { get; set; }  = 4;
+        public int BlockSize { get; set; }  = 3;
         public int Rows { get { return BlockSize * BlockSize; } }
         public int Columns { get { return BlockSize * BlockSize; } }
+
+        public const byte EmptyCellValue = 0xff;
+        public byte MinValue
+            {
+            get
+                {
+                switch (BlockSize)
+                    {
+                    case 3:
+                        return 1; // Start with '1'
+                    case 4:
+                        return 0; // Start with '0'
+                    case 5:
+                        return 10; // Start with 'A'
+                    case 6:
+                        return 0; // Start with '0'
+                    }
+
+                return 0; // Should not hit this case.
+                }
+            }
+        public byte MaxValue
+            {
+            get
+                {
+                return (byte) (MinValue + BlockSize * BlockSize - 1);
+                }
+            }
 
         // We keep an array of Cell objects as well as an array of just the cell values.
         // When solving puzzles, we create multiple copies of the Puzzle, and all we need is the cellValues.
@@ -28,10 +56,6 @@ namespace SparksInTheSoftware.Sudoku
                             {
                             Cell newCell = new Cell(this, row, column);
                             this.cells[row, column] = newCell;
-
-                            // Any cell with a value is part of the puzzle, so is ReadOnly.
-                            if (newCell.Value != 0)
-                                newCell.ReadOnly = true;
                             }
                         }
                     }
@@ -82,12 +106,25 @@ namespace SparksInTheSoftware.Sudoku
                 {
                 for (int column = 0; column < puzzle.Columns; column++)
                     {
-                    byte value = 0;
+                    byte value = EmptyCellValue;
                     char ch = puzzleString[iChar++];
 
-                    if (ch >= '1' && ch <= '9')
-                        value = (byte)(ch - '1');
-                    puzzle.SetValue(row, column, value);
+                    if (ch >= '0' && ch <= '9')
+                        {
+                        value = (byte)(ch - '0');
+                        }
+                    else if ((ch >= 'A') && (ch <= 'Z'))
+                        {
+                        value = (byte)(ch - 'A' + 10);
+                        }
+                    else if ((ch >= 'a') && (ch <= 'z'))
+                        {
+                        value = (byte)(ch - 'a' + 10);
+                        }
+
+                    Cell cell = puzzle.Cells[row, column];
+                    cell.Value = value;
+                    cell.ReadOnly = (value != EmptyCellValue);
                     }
                 }
 
@@ -110,9 +147,10 @@ namespace SparksInTheSoftware.Sudoku
 
         public Puzzle(int blockSize = 3)
             {
-            this.cellValues = new byte[Rows, Columns];
-            this.solutions = null;
             this.BlockSize = blockSize;
+            this.cellValues = new byte[Rows, Columns];
+            Clear(true);
+            this.solutions = null;
             }
 
         public Puzzle(Puzzle puzzle) : this(puzzle.cellValues, puzzle.EmptyCells) { }
@@ -131,7 +169,7 @@ namespace SparksInTheSoftware.Sudoku
                 {
                 for (int column = 0; column < Columns; column++)
                     {
-                    if (this.cellValues[row, column] == 0)
+                    if (this.cellValues[row, column] == EmptyCellValue)
                         {
                         this.EmptyCells++;
                         }
@@ -148,10 +186,15 @@ namespace SparksInTheSoftware.Sudoku
                     {
                     if (all || !Cells[row, column].ReadOnly)
                         {
-                        Cells[row, column].Value = 0;
+                        Cells[row, column].Value = EmptyCellValue;
                         }
                     }
                 }
+            }
+
+        public bool ValueInRange(byte value)
+            {
+            return ((value >= MinValue) && (value <= MaxValue));
             }
 
         private void SetValue(int row, int column, byte value)
@@ -162,11 +205,11 @@ namespace SparksInTheSoftware.Sudoku
 
             if (oldValue != value)
                 {
-                if (value == 0)
+                if (value == EmptyCellValue)
                     {
                     EmptyCells++;
                     }
-                else if (oldValue == 0)
+                else if (oldValue == EmptyCellValue)
                     {
                     EmptyCells--;
                     }
@@ -260,9 +303,9 @@ namespace SparksInTheSoftware.Sudoku
                 for (int column = 0; column < Columns; column++)
                     {
                     progessReport.Column = column;
-                    if (this.cellValues[row, column] == 0)
+                    if (this.cellValues[row, column] == EmptyCellValue)
                         {
-                        for (byte value = 1; value <= 9; value++)
+                        for (byte value = MinValue; value <= MaxValue; value++)
                             {
                             if (!IsValueInUse(row, column, value))
                                 {
@@ -321,7 +364,7 @@ namespace SparksInTheSoftware.Sudoku
                         Puzzle.SetValue(Row, Column, value);
 
                         // Find new conflicts.
-                        if (value != 0)
+                        if (value != EmptyCellValue)
                             {
                             Puzzle.UpdateConflicts(this);
                             }
@@ -329,7 +372,7 @@ namespace SparksInTheSoftware.Sudoku
                     }
                 }
 
-            public bool ReadOnly { get; set; }
+            public bool ReadOnly { get; set; } = false;
 
             private List<Cell> conflictingCells = null;
             public List<Cell> ConflictingCells

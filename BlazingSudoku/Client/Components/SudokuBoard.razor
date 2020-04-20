@@ -8,115 +8,137 @@
             <option value="Intermediate">Intermediate</option>
             <option value="Expert">Expert</option>
         </select>
-        <input type="text" @bind="puzzleNumber" placeholder="1-100"/>
+        <input type="text" @bind="puzzleNumber" placeholder="1-100" />
         <button @onclick="OnClickLoadPuzzle">Load</button>
         <button @onclick="OnClickClearPuzzle">Clear</button>
         <button @onclick="OnClickSolvePuzzle">Solve</button>
+    </div>
+    <div class="sudoku-second-line">
+        <div class="status-line">@statusMessage</div>
+        <ToggleButton @bind-State="BlockSizeIndex" StateStrings="@blockSizeIndexStrings" StateClasses="@blockSizeIndexClasses" />
+        <ToggleButton @bind-State="EditModeState" StateStrings="@editModeStateStrings" StateClasses="@editModeStateClasses" />
+        <div data-toggle="tooltip" data-placement="top" title="Load Previous Puzzle">
+            <img src="svg/chevron-left.svg" @onclick="OnClickLoadPrevPuzzle" />
+        </div>
+        <div data-toggle="tooltip" data-placement="top" title="Load Next Puzzle">
+            <img src="svg/chevron-right.svg" @onclick="OnClickLoadNextPuzzle" />
+        </div>
     </div>
     <CascadingValue Value="this">
         @for (int row = 0; row < Puzzle.Rows; row++)
             {
             if ((row % Puzzle.BlockSize) == 0)
                 {
-                <div class="sudoku-row-gap"/>
+                <div class="sudoku-row-gap" />
                 }
             <div class="sudoku-row">
                 @for (int column = 0; column < Puzzle.Columns; column++)
                     {
                     if ((column % Puzzle.BlockSize) == 0)
                         {
-                        <div class="sudoku-column-gap"/>
+                        <div class="sudoku-column-gap" />
                         }
                     <SudokuCell Cell="@(Puzzle.Cells[row, column])" />
                     }
             </div>
             }
     </CascadingValue>
-    <div class="sudoku-bottom-line">
-        <div data-toggle="tooltip" data-placement="top" title="Load Next Puzzle">
-            <img src="svg/chevron-right.svg"  @onclick="OnClickLoadNextPuzzle"/>
-        </div>
-        <div data-toggle="tooltip" data-placement="top" title="Load Previous Puzzle">
-            <img src="svg/chevron-left.svg"  @onclick="OnClickLoadPrevPuzzle"/>
-        </div>
-        <ToggleButton @bind-State="EditModeState" StateStrings="@editModeStateStrings" StateClasses="@editModeStateClasses"/>
-        <ToggleButton @bind-State="HexModeState" StateStrings="@hexModeStateStrings" StateClasses="@hexModeStateClasses"/>
-        <div class="status-line">@statusMessage</div>
-    </div>
 </div>
 
 <style>
-    .hex-mode-3x3
-        {
-        background-color: lightgoldenrodyellow;
+    .block-size-3
+    {
+        background-color: white;
         color: black;
+    }
+
+        .block-size-3:hover
+        {
+            background-color: deepskyblue;
         }
 
-    .hex-mode-3x3:hover
-        {
-        background-color: yellow;
-        }
-
-    .hex-mode-4x4
-        {
-        background-color: lavender;
+    .block-size-4
+    {
+        background-color: gold;
         color: black;
+    }
+
+        .block-size-4:hover
+        {
+            background-color: deepskyblue;
         }
 
-    .hex-mode-4x4:hover
+    .block-size-5
+    {
+        background-color: hotpink;
+        color: black;
+    }
+
+        .block-size-5:hover
         {
-        background-color: lavenderblush;
+            background-color: deepskyblue;
+        }
+
+    .block-size-6
+    {
+        background-color: mediumspringgreen;
+        color: black;
+    }
+
+        .block-size-6:hover
+        {
+            background-color: deepskyblue;
         }
 
     .edit-mode-off
-        {
+    {
         background-color: white;
         color: black;
-        }
+    }
 
-    .edit-mode-off:hover
+        .edit-mode-off:hover
         {
-        color: blue;
+            color: blue;
         }
 
     .edit-mode-on
-        {
+    {
         background-color: cornflowerblue;
         color: white;
-        }
+    }
 
-    .edit-mode-on:hover
+        .edit-mode-on:hover
         {
-        color: yellow;
+            color: yellow;
         }
 </style>
 
 @code
     {
-        [Parameter] public Puzzle Puzzle { get; set; }
+    [Parameter] public Puzzle Puzzle { get; set; }
     private int puzzleNumber = 1;
     private string puzzleDifficulty = "Intermediate";
     private string statusMessage = "";
 
-    private string[] hexModeStateStrings = { "3 x 3", "4 x 4" };
-    private string[] hexModeStateClasses = { "hex-mode-3x3", "hex-mode-4x4" };
-    private bool hexMode = false;
-    public int HexModeState
+    private string[] blockSizeIndexStrings = { "3 x 3", "4 x 4", "5 x 5", "6 x 6" };
+    private string[] blockSizeIndexClasses = { "block-size-3", "block-size-4", "block-size-5", "block-size-6" };
+    private int blockSizeIndex = 0;
+    public int BlockSizeIndex
         {
         get
             {
-            return this.hexMode ? 1 : 0;
+            return this.blockSizeIndex;
             }
         set
             {
-            this.hexMode = (value == 1);
-            if (this.hexMode)
+            this.blockSizeIndex = value;
+            if (this.blockSizeIndex == 0)
                 {
-                Puzzle = new Puzzle(4);
+                OnClickLoadPuzzle(); // For now LoadPuzzle() only loads 3x3 block size
                 }
             else
                 {
-                OnClickLoadPuzzle(); // For now LoadPuzzle() only loads 3x3 block size
+                Puzzle = new Puzzle(this.blockSizeIndex + 3);
                 }
             StateHasChanged();
             }
@@ -153,7 +175,7 @@
         Puzzle newPuzzle = Puzzle.LoadPuzzle(newPuzzleNumber - 1, newPuzzleDifficulty);
         if (newPuzzle != null)
             {
-            this.hexMode = false;  // Load puzzle only loads 3x3 puzzles for now.
+            this.blockSizeIndex = newPuzzle.BlockSize - 3;
             this.Puzzle = newPuzzle;
             this.puzzleNumber = newPuzzleNumber;
             this.puzzleDifficulty = newPuzzleDifficulty;
@@ -189,7 +211,7 @@
             {
             this.statusMessage = $"Found {solutions} solutions.";
             Puzzle solution = Puzzle.Solutions[0];
-            for (int row=0; row < Puzzle.Rows; row++)
+            for (int row = 0; row < Puzzle.Rows; row++)
                 {
                 for (int column = 0; column < Puzzle.Columns; column++)
                     {
@@ -315,4 +337,4 @@
 
         SetFocus(row, column);
         }
-    }
+}

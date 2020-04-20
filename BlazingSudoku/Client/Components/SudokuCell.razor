@@ -7,7 +7,8 @@
 
 @code {
     private Puzzle.Cell cell;
-    [Parameter] public Puzzle.Cell Cell
+    [Parameter]
+    public Puzzle.Cell Cell
         {
         get { return this.cell; }
         set
@@ -24,18 +25,45 @@
 
     private ElementReference rootElement;
 
+    private string BorderClass
+        {
+        get
+            {
+            int rowInBlock = (Cell.Row % SudokuBoard.Puzzle.BlockSize);
+            int columnInBlock = (Cell.Column % SudokuBoard.Puzzle.BlockSize);
+            string borderClass = "";
+
+
+            if (rowInBlock == 0)
+                {
+                borderClass = "sudoku-cell-border-top";
+                }
+            else if (rowInBlock == (SudokuBoard.Puzzle.BlockSize - 1))
+                {
+                borderClass = "sudoku-cell-border-bottom";
+                }
+
+            if (columnInBlock == 0)
+                {
+                borderClass += " sudoku-cell-border-left";
+                }
+            else if (columnInBlock == (SudokuBoard.Puzzle.BlockSize - 1))
+                {
+                borderClass += " sudoku-cell-border-right";
+                }
+
+            return borderClass;
+            }
+        }
+
     private string CellClass
         {
         get
             {
-            return String.Format("sudoku-cell-border-{0}-{1}-{2} {3} {4} sudoku-cell sudoku-cell-block-{5}",
-                SudokuBoard.Puzzle.BlockSize,
-                Cell.Row % SudokuBoard.Puzzle.BlockSize,
-                Cell.Column % SudokuBoard.Puzzle.BlockSize,
-                (Cell.ConflictingCells?.Count > 0) ? "sudoku-cell-conflict" : "",
-                Cell.ReadOnly ? "sudoku-cell-readonly" : "",
-                SudokuBoard.Puzzle.BlockSize
-                );
+            string conflict = (Cell.ConflictingCells?.Count > 0) ? "sudoku-cell-conflict" : "";
+            string readOnly = Cell.ReadOnly ? "sudoku-cell-readonly" : "";
+
+            return $"{BorderClass} {conflict} {readOnly} sudoku-cell sudoku-cell-block-{SudokuBoard.Puzzle.BlockSize}";
             }
         }
 
@@ -43,17 +71,14 @@
         {
         get
             {
-            if (Cell.Value == 0)
-                return (MarkupString) "&nbsp;";
+            if (Cell.Value == Puzzle.EmptyCellValue)
+                return (MarkupString)"&nbsp;";
 
-            // For 3x3 board: the digits are 1-9.
-            // For 4x4 board: the digits are 0-F (i.e. hex).
-            int offset = (SudokuBoard.Puzzle.BlockSize == 3) ? 0 : 1;
-            int value = Cell.Value - offset;
+            int value = Cell.Value;
 
             char ch = (char)((value < 10) ? ('0' + value) : ('A' + value - 10));
 
-            return (MarkupString) $"{ch}";
+            return (MarkupString)$"{ch}";
             }
         }
 
@@ -91,84 +116,40 @@
             case "Space":
             case "Delete":
             case "Backspace":
-                UpdateValue(0);
+                UpdateValue(Puzzle.EmptyCellValue);
                 break;
             }
         }
 
     private void OnKeyPress(KeyboardEventArgs args)
         {
-        byte offset = (byte)((SudokuBoard.Puzzle.BlockSize == 3) ? 0 : 1);
+        char ch = args.Key[0];
 
-        switch (args.Key)
+        // 3 x 3 - digits 1 to 9
+        // 4 x 4 - digits 0 to 9 and letters A to F
+        // 5 x 5 - letters A to Y
+        // 6 x 6 - digits 0 to 9 and letters A to Z
+
+        if ((ch >= '0') && (ch <= '9'))
             {
-            case "0":
-                UpdateValue(0 + offset);
-                break;
-            case "1":
-                UpdateValue(1 + offset);
-                break;
-            case "2":
-                UpdateValue(2 + offset);
-                break;
-            case "3":
-                UpdateValue(3 + offset);
-                break;
-            case "4":
-                UpdateValue(4 + offset);
-                break;
-            case "5":
-                UpdateValue(5 + offset);
-                break;
-            case "6":
-                UpdateValue(6 + offset);
-                break;
-            case "7":
-                UpdateValue(7 + offset);
-                break;
-            case "8":
-                UpdateValue(8 + offset);
-                break;
-            case "9":
-                UpdateValue(9 + offset);
-                break;
-            case "A":
-            case "a":
-                UpdateValue(10 + offset);
-                break;
-            case "B":
-            case "b":
-                UpdateValue(11 + offset);
-                break;
-            case "C":
-            case "c":
-                UpdateValue(12 + offset);
-                break;
-            case "D":
-            case "d":
-                UpdateValue(13 + offset);
-                break;
-            case "E":
-            case "e":
-                UpdateValue(14 + offset);
-                break;
-            case "F":
-            case "f":
-                UpdateValue(15 + offset);
-                break;
+            UpdateValue(ch - '0');
             }
-        }
-
-    public bool ValueInRange(int value)
-        {
-        return ((value >= 1) && (value <= SudokuBoard.Puzzle.Columns));
+        else if ((ch >= 'A') && (ch <= 'Z'))
+            {
+            UpdateValue((ch - 'A') + 10);
+            }
+        else if ((ch >= 'a') && (ch <= 'z'))
+            {
+            UpdateValue((ch - 'a') + 10);
+            }
         }
 
     private void UpdateValue(int newValue)
         {
         bool readOnly = (Cell.ReadOnly && !SudokuBoard.EditMode);
 
-        if (!readOnly && (Cell.Value != newValue) && ValueInRange(newValue))
+        if (!readOnly && (Cell.Value != newValue)
+            && ((newValue == Puzzle.EmptyCellValue) || SudokuBoard.Puzzle.ValueInRange((byte)newValue)))
             {
             List<SudokuCell> sudokuCellsToUpdate = new List<SudokuCell>();
 
@@ -184,10 +165,10 @@
                     }
                 }
 
-            Cell.Value = (byte) newValue;
+            Cell.Value = (byte)newValue;
             if (SudokuBoard.EditMode)
                 {
-                Cell.ReadOnly = (newValue != 0);
+                Cell.ReadOnly = (newValue != Puzzle.EmptyCellValue);
                 }
 
             if (Cell.ConflictingCells != null)
@@ -214,6 +195,6 @@
         {
         // Dang! No easy way to set the focus.
         // There's JavaScript code in index.html that can be called to set the focus to an element by id.
-        JSRuntime.InvokeAsync<int>("setFocus", (object) rootElement);
+        JSRuntime.InvokeAsync<int>("setFocus", (object)rootElement);
         }
-    }
+}
