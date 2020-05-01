@@ -277,16 +277,7 @@ namespace SparksInTheSoftware.Sudoku
             public int PercentComplete { get; set; }
             };
 
-        public int Solve(int maxSolutions)
-            {
-            Task<int> task = Solve(maxSolutions, null);
-
-            task.Wait();
-
-            return task.Result;
-            }
-
-        public async Task<int> Solve(int maxSolutions, IProgress<SolutionProgressReport> progress, bool clear = false)
+        public int Solve(int maxSolutions, IProgress<SolutionProgressReport> progress = null, bool clear = false)
             {
             if (clear)
                 {
@@ -312,8 +303,8 @@ namespace SparksInTheSoftware.Sudoku
                                 progessReport.Value = value;
                                 SetValue(row, column, value);
                                 progress?.Report(progessReport);
-                                await Solve(maxSolutions, progress);
-                                SetValue(row, column, 0);
+                                Solve(maxSolutions, progress);
+                                SetValue(row, column, EmptyCellValue);
                                 }
                             }
 

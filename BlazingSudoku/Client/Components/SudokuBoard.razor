@@ -204,8 +204,10 @@
         {
         Progress<Puzzle.SolutionProgressReport> progress = new Progress<Puzzle.SolutionProgressReport>();
         progress.ProgressChanged += ReportSolutionProgress;
+
         this.statusMessage = "Solving...";
-        int solutions = await Puzzle.Solve(10, progress, true);
+
+        int solutions = await Task.Run(() => { return Puzzle.Solve(10, progress, true); });
 
         if (solutions > 0)
             {
