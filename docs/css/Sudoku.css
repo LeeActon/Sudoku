@@ -1,0 +1,148 @@
+﻿.sudoku-page
+{
+    display: flex;
+}
+
+.sudoku-help
+{
+    padding-left: 2rem;
+    flex: 1;
+}
+
+.sudoku-top-line
+{
+    display: flex;
+    flex-direction: row;
+}
+
+.sudoku-second-line
+{
+    display: flex;
+    flex-direction: row;
+}
+
+    .sudoku-second-line img
+    {
+        width: 1.5rem;
+        height: 1.5rem;
+    }
+
+    .sudoku-second-line input[type=checkbox]
+    {
+        margin: 5px;
+    }
+
+.status-line
+{
+    font-size: medium;
+    color: red;
+    flex-basis: 20rem;
+}
+
+.sudoku-help p
+{
+    margin-bottom: 0.25rem;
+}
+
+.sudoku-board
+{
+    display: flex;
+    flex: 2;
+    flex-direction: column;
+}
+
+.sudoku-row
+{
+    flex: 1;
+    display: flex;
+}
+
+.sudoku-cell
+{
+    background-color: aliceblue;
+    border: 1px solid black;
+    text-align: center;
+    border-top: 1px solid black;
+    border-left: 1px solid black;
+    border-bottom: 1px solid black;
+    border-right: 1px solid black;
+}
+
+    .sudoku-cell:focus
+    {
+        background-color: black;
+        color: white;
+    }
+
+.sudoku-cell-block-3
+{
+    flex-basis: 3.5rem;
+    font-size: 1.5rem;
+    padding: 0.3rem;
+}
+
+.sudoku-cell-block-4
+{
+    flex-basis: 2rem;
+    font-size: 1rem;
+    padding: 0;
+}
+
+.sudoku-cell-block-5
+{
+    flex-basis: 2rem;
+    font-size: 1rem;
+    padding: 0;
+}
+
+.sudoku-cell-block-6
+{
+    flex-basis: 2rem;
+    font-size: 1rem;
+    padding: 0;
+}
+
+.sudoku-cell-readonly
+{
+    background-color: cornflowerblue;
+    color: white;
+}
+
+.sudoku-cell-conflict, .sudoku-cell-conflict:focus
+{
+    color: red;
+}
+
+/*
+    The outer borders of the outer cells need to be twice as big as the boarders of
+    the inner cells because their borders double up because they are next to each other.
+*/
+.sudoku-cell-border-top
+{
+    border-top: 2px solid black;
+}
+
+.sudoku-cell-border-bottom
+{
+    border-bottom: 2px solid black;
+}
+
+.sudoku-cell-border-left
+{
+    border-left: 2px solid black;
+}
+
+.sudoku-cell-border-right
+{
+    border-right: 2px solid black;
+}
+
+.sudoku-column-gap
+{
+    flex-basis: 4px;
+}
+
+.sudoku-row-gap
+{
+    flex-basis: 4px;
+}
